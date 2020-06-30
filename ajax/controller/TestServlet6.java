@@ -84,7 +84,6 @@ public class TestServlet6 extends HttpServlet {
 		out.print(userArray);
 		out.flush();
 		out.close();
-		System.out.println("dong won");
 		
 	}
 
