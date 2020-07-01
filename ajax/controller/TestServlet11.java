@@ -1,7 +1,6 @@
 package testAjax.ajax.controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import javax.servlet.ServletException;
@@ -10,22 +9,21 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import com.google.gson.Gson;
 
 import testAjax.ajax.model.vo.User;
 
 /**
- * Servlet implementation class TestServlet6
+ * Servlet implementation class TestServlet11
  */
-@WebServlet("/test6.do")
-public class TestServlet6 extends HttpServlet {
+@WebServlet("/test11.do")
+public class TestServlet11 extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public TestServlet6() {
+    public TestServlet11() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -36,7 +34,7 @@ public class TestServlet6 extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TestServlet5에서 복사해오자
 		ArrayList<User> userList = new ArrayList<>();
-		
+
 		userList.add(new User(1,"김동원","한국"));
 		userList.add(new User(2,"강광산","미국"));
 		userList.add(new User(3,"오영은","중국"));
@@ -46,44 +44,23 @@ public class TestServlet6 extends HttpServlet {
 		userList.add(new User(7,"박재명","파키스탄"));
 		// DB를 통해 회원 데이터를 select해서 userList에 담았다고 가정
 		
-		int userNo = Integer.valueOf(request.getParameter("userNo1"));
-		
-		User user = null;
-		for(int i=0 ; i<userList.size() ; i++) {
-			if(userList.get(i).getUserNo() == userNo) {
-				user = userList.get(i);
-			}
-		}
-		
-		JSONObject userObj = null;				// Map과 비슷(key, value) : put -> 화면단에선 속성
-		JSONArray userArray = new JSONArray();  // ArrayList와 비슷 : add -> 화면단에선 배열
-		
-		if(user != null) {
-			userObj = new JSONObject(); // 회원한명당 하나의 JSONObject로 담아줘야한다.
-			
-			userObj.put("userNo", user.getUserNo());
-			userObj.put("userName", user.getUserName());
-			userObj.put("userNation", user.getUserNation());
-			
-			userArray.add(userObj);
-		}else {		// 검색된 회원이 없다면
-			for(User userInfo : userList) {
-				userObj = new JSONObject();
-				
-				userObj.put("userNo", userInfo.getUserNo());
-				userObj.put("userName", userInfo.getUserName());
-				userObj.put("userNation", userInfo.getUserNation());
-				
-				userArray.add(userObj);
-			}
-		}
-		
 		response.setContentType("application/json; charset=utf-8");
 		
-		PrintWriter out = response.getWriter();
-		out.print(userArray); // JSONObject가 JSONArry에 담겨 넘어온다.
-		out.flush();
-		out.close();
+		
+		/*
+		 * Gson : Google JSON을 줄인말
+		 * 자바의 List와 Map을 아주 쉽게 json객체로 전송할 수 있다.
+		 * 두 객체를 달리 처리하는 것이 아니라, gson객체의 toJson메소드로 쉽게
+		 * json객체로 변환
+		 * 
+		 * toJson메소드의 첫번째 인자는 Object타입이다.
+		 * --> 따라서 컬렉션 뿐만 아니라, 어떠한 객체도 처리할 수 있다.
+		 * 두번째 인자는 스트림 객체를 쓰는 부분이다.
+		 * 
+		 * 날짜의 포맷을 처리하기 위해서 GsonBuilder도 제공한다.
+		 */
+		
+		new Gson().toJson(userList,response.getWriter());
 		
 	}
 

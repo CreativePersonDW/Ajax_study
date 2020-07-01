@@ -16,16 +16,16 @@ import org.json.simple.JSONObject;
 import testAjax.ajax.model.vo.User;
 
 /**
- * Servlet implementation class TestServlet6
+ * Servlet implementation class TestServlet7
  */
-@WebServlet("/test6.do")
-public class TestServlet6 extends HttpServlet {
+@WebServlet("/test7.do")
+public class TestServlet7 extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public TestServlet6() {
+    public TestServlet7() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -46,45 +46,41 @@ public class TestServlet6 extends HttpServlet {
 		userList.add(new User(7,"박재명","파키스탄"));
 		// DB를 통해 회원 데이터를 select해서 userList에 담았다고 가정
 		
-		int userNo = Integer.valueOf(request.getParameter("userNo1"));
 		
-		User user = null;
-		for(int i=0 ; i<userList.size() ; i++) {
-			if(userList.get(i).getUserNo() == userNo) {
-				user = userList.get(i);
+		// 문자열이 ','를 기준으로 회원번호를 담고 있음
+		String userNo = request.getParameter("userNo");
+		String[] userNoArr = userNo.split(",");
+		
+		JSONArray userArray = new JSONArray();
+		
+		for(String id : userNoArr) {
+			for(int i=0; i<userList.size(); i++) {
+				if(Integer.valueOf(id) == userList.get(i).getUserNo()) {
+					User user = userList.get(i);
+					
+					JSONObject userObj = new JSONObject();
+					userObj.put("userNo", user.getUserNo());
+					userObj.put("userName", user.getUserName());
+					userObj.put("userNation", user.getUserNation());
+					
+					userArray.add(userObj);					
+				}
 			}
 		}
-		
-		JSONObject userObj = null;				// Map과 비슷(key, value) : put -> 화면단에선 속성
-		JSONArray userArray = new JSONArray();  // ArrayList와 비슷 : add -> 화면단에선 배열
-		
-		if(user != null) {
-			userObj = new JSONObject(); // 회원한명당 하나의 JSONObject로 담아줘야한다.
-			
-			userObj.put("userNo", user.getUserNo());
-			userObj.put("userName", user.getUserName());
-			userObj.put("userNation", user.getUserNation());
-			
-			userArray.add(userObj);
-		}else {		// 검색된 회원이 없다면
-			for(User userInfo : userList) {
-				userObj = new JSONObject();
-				
-				userObj.put("userNo", userInfo.getUserNo());
-				userObj.put("userName", userInfo.getUserName());
-				userObj.put("userNation", userInfo.getUserNation());
-				
-				userArray.add(userObj);
-			}
-		}
+	
+	
+		// TestServlet6에서는 userArray를 바로 보냈지만,
+		// 여기서는 userArray를 JSONObject에 key값과 매칭해서 보내겠다.
+		JSONObject result = new JSONObject();
+		result.put("list", userArray); // 우리의 JSONArray를 한번 더 JSONObject로 감쌈
 		
 		response.setContentType("application/json; charset=utf-8");
-		
+	
 		PrintWriter out = response.getWriter();
-		out.print(userArray); // JSONObject가 JSONArry에 담겨 넘어온다.
+		out.print(result);
 		out.flush();
 		out.close();
-		
+	
 	}
 
 	/**

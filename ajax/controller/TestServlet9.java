@@ -16,16 +16,16 @@ import org.json.simple.JSONObject;
 import testAjax.ajax.model.vo.User;
 
 /**
- * Servlet implementation class TestServlet6
+ * Servlet implementation class TestServlet9
  */
-@WebServlet("/test6.do")
-public class TestServlet6 extends HttpServlet {
+@WebServlet("/test9.do")
+public class TestServlet9 extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public TestServlet6() {
+    public TestServlet9() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -46,44 +46,26 @@ public class TestServlet6 extends HttpServlet {
 		userList.add(new User(7,"박재명","파키스탄"));
 		// DB를 통해 회원 데이터를 select해서 userList에 담았다고 가정
 		
-		int userNo = Integer.valueOf(request.getParameter("userNo1"));
+		JSONObject userObj = null;
+		JSONArray userArray = new JSONArray();
 		
-		User user = null;
-		for(int i=0 ; i<userList.size() ; i++) {
-			if(userList.get(i).getUserNo() == userNo) {
-				user = userList.get(i);
-			}
-		}
-		
-		JSONObject userObj = null;				// Map과 비슷(key, value) : put -> 화면단에선 속성
-		JSONArray userArray = new JSONArray();  // ArrayList와 비슷 : add -> 화면단에선 배열
-		
-		if(user != null) {
-			userObj = new JSONObject(); // 회원한명당 하나의 JSONObject로 담아줘야한다.
+		for(User userInfo : userList) {
+			userObj = new JSONObject();
 			
-			userObj.put("userNo", user.getUserNo());
-			userObj.put("userName", user.getUserName());
-			userObj.put("userNation", user.getUserNation());
+			userObj.put("userNo", userInfo.getUserNo());
+			userObj.put("userName", userInfo.getUserName());
+			userObj.put("userNation", userInfo.getUserNation());
 			
 			userArray.add(userObj);
-		}else {		// 검색된 회원이 없다면
-			for(User userInfo : userList) {
-				userObj = new JSONObject();
-				
-				userObj.put("userNo", userInfo.getUserNo());
-				userObj.put("userName", userInfo.getUserName());
-				userObj.put("userNation", userInfo.getUserNation());
-				
-				userArray.add(userObj);
-			}
 		}
 		
-		response.setContentType("application/json; charset=utf-8");
 		
+		response.setContentType("application/json; charset=utf-8");
 		PrintWriter out = response.getWriter();
-		out.print(userArray); // JSONObject가 JSONArry에 담겨 넘어온다.
+		out.print(userArray);
 		out.flush();
 		out.close();
+		
 		
 	}
 
